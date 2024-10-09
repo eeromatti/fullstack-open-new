@@ -66,32 +66,37 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
     })
 
-app.post('/api/persons', (request, response) => {
+  app.post('/api/persons', (request, response) => {
     const body = request.body
-    // content missing 
-    if ((!body.name) || (!body.number)) {
+
+    // Tarkista puuttuuko nimi tai numero
+    if (!body.name || !body.number) {
         return response.status(400).json({ 
             error: 'content missing' 
         })
     }
-    // name exists already
-    const name = body.name
-    const exists = persons.find(person => person.name === name)
+
+    // Tarkista, onko nimi jo olemassa listassa
+    const exists = persons.find(person => person.name === body.name)
     if (exists) {
         return response.status(409).json({ 
             error: 'the person has been added already' 
         })
     }
-
-    const person = {
-        id: Math.floor(Math.random() * 10000),
+    
+    // Luo uusi henkilö
+    const person = {       
+        id: (Math.floor(Math.random() * 10000)).toString(),
         name: body.name,
         number: body.number
     }
-    
+
+    // Lisää henkilö listaan
     persons = persons.concat(person)
+
+    // Palauta lisätty henkilö
     response.json(person)
-    })  
+})
 
 app.get('/info/', (request, response) => {
     const count = persons.length 
